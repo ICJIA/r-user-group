@@ -1,0 +1,148 @@
+:root {
+  --color-header-footer: #0D4474;
+  --color-main: #466c8c;
+  --color-main2: #0D4474;
+  --color-main3: #1f3641;
+}
+
+
+/* global */
+body {
+  font-family: 'Lato',Tahoma,Helvetica,Arial,sans-serif;
+  font-size: .8em;
+  background: linear-gradient(#0D4474 100px, white 100px, white calc(100% - 50px), #0D4474 calc(100% - 50px));
+}
+
+.backgrounds {
+  background-image: url(../image/icjia.png), url(../image/il_seal.gif);
+  background-size: 150px, 90px;
+  background-repeat: no-repeat, no-repeat;
+  background-position: 20px 10px, calc(100% - 20px) 5px;
+}
+
+.reveal {
+  color: #666;
+}
+
+.reveal h1,
+.reveal h2 {
+  font-weight: 900;
+}
+
+.reveal h1 {
+  color: white;
+}
+
+.reveal h2 {
+  color: var(--color-main);
+}
+
+.reveal section img {
+  border: 0;
+  box-shadow: none;
+}
+
+.reveal a {
+  color: var(--color-main)
+}
+
+.reveal a:hover {
+  color: var(--color-main2)
+}
+
+
+/* control */
+.reveal .controls .navigate-right,
+.reveal .controls .navigate-right.enabled {
+    border-left-color: var(--color-main3);
+}
+
+.reveal .controls .navigate-left,
+.reveal .controls .navigate-left.enabled {
+    border-right-color: var(--color-main3);
+}
+
+.reveal .controls .navigate-up,
+.reveal .controls .navigate-up.enabled {
+    border-bottom-color: var(--color-main3);
+}
+
+.reveal .controls .navigate-down,
+.reveal .controls .navigate-down.enabled {
+    border-top-color: var(--color-main3);
+}
+
+
+/* control:hover */
+.reveal .controls .navigate-right.enabled:hover {
+    border-left-color: var(--color-main2);
+}
+
+.reveal .controls .navigate-left.enabled:hover {
+    border-right-color: var(--color-main2);
+}
+
+.reveal .controls .navigate-up.enabled:hover {
+    border-bottom-color: var(--color-main2);
+}
+
+.reveal .controls .navigate-down.enabled:hover {
+    border-top-color: var(--color-main2);
+}
+
+
+/* progress bar */
+.reveal .progress span {
+  background: white;
+}
+
+
+/* title slide */
+.reveal h1.title {
+  color: var(--color-main);
+  margin: 20% 25% 5% 5%;
+  font-size: 1.5em;
+  text-align: left;
+}
+
+.reveal h2.author,
+.reveal h3.date {
+  color: #777;
+  font-family: 'Lato',Tahoma,Helvetica,Arial,sans-serif;
+  font-weight: 400;
+  font-size: .8em;
+  margin-left: 5%;
+  text-align: left;
+}
+
+
+/* last slide */
+#thank-you > h1 {
+  color: var(--color-main);
+}
+
+/* blockquote */
+.reveal blockquote {
+  color: #333;
+  background-color: #ccc;
+}
+
+
+/* row and column */
+.row {
+    display: flex;
+}
+
+.column {
+    flex: 50%;
+}
+
+
+/* caption */
+.reveal p.caption {
+  color: #333;
+  font-size: 0.5em;
+  font-style: italic;
+  text-align: center;
+  margin-top: 1em;
+}
