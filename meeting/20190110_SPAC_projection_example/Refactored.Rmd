@@ -1,0 +1,717 @@
+---
+title: "Probation Projection-refactored"
+date: "January, 2019"
+output: 
+  html_document:
+    code_folding: hide
+    
+---
+
+
+```{r setup, include=FALSE}
+set.seed(911)
+```
+
+
+## SPAC Illinois Probation Population Projection Model Overview
+[... omitted ...]
+
+
+### Data Sources 
+[... omitted ...]
+
+
+### Required Libraries in R
+[... omitted ...]
+
+```{r dependencies, message=FALSE, warning=FALSE, include=FALSE}
+install_and_load_pkgs <- function(pkgs) {
+  new_pkgs <- pkgs[!pkgs %in% installed.packages()]
+  
+  if (length(new_pkgs) > 0) install.packages(new_pkgs)
+  
+  for (pkg in pkgs) {
+    library(pkg, character.only = TRUE)
+  }
+}
+
+pkgs <- c(
+  "dplyr",
+  "tidyr",
+  "lubridate",
+  "ggplot2",
+  "readr",
+  "knitr",
+  "rmarkdown",
+  "scales",
+  "simstudy"
+)
+
+install_and_load_pkgs(pkgs)
+```
+
+
+### Retrieve actual AOIC data and simulate CHRI sentence data
+[... omitted ...]
+
+```{r simulated_data, echo=TRUE, message=FALSE, warning=FALSE}
+## import AOIC data (change to appropriate path)
+url <- "https://raw.githubusercontent.com/bobaekang/icjia-r-user-group/master/meeting/20190110_SPAC_projection_example/AOIC_PopulationData.csv"
+aoic <- read_csv(url)
+names(aoic) <- c("data_year", "circuit", "indic_num", "indic_desc", "caseload")
+
+
+# define relative frequencies of age and judicial circuit
+age_probs <- paste0(
+  "0.051;0.052;0.049;0.048;0.046;0.043;0.042;0.039;0.037;0.035;",
+  "0.034;0.032;0.03;0.028;0.028;0.026;0.024;0.023;0.022;0.021;",
+  "0.019;0.018;0.018;0.017;0.017;0.016;0.016;0.015;0.015;0.014;",
+  "0.014;0.013;0.012;0.011;0.01;0.01;0.008;0.007;0.007;0.006;",
+  "0.005;0.004;0.003;0.003;0.002;0.002;0.002;0.001;0.001;0.001;",
+  "0.001;0;0;0;0;0;0;0;0;0;",
+  "0;0;0;0;0;0;0;0;0;0;",
+  "0;0;0;0;0;0;0;0;0;0;",
+  "0;0;0;0;0"
+)
+
+circuit_probs <- paste0(
+  "0.026;0.021;0.036;0.035;0.029;0.055;0.029;0.021;0.01;0.037;",
+  "0.035;0.024;0.01;0.022;0.022;0.032;0.049;0.079;0.051;0.026;",
+  "0.008;0.011;0.022;0.31"
+)
+
+
+# create data definitions for simstudy
+dd <- defData(
+    varname = "arrest_age",
+    dist = "categorical",
+    formula = age_probs
+  ) %>%
+  defData(
+    varname = "sent_date",
+    dist = "uniformInt",
+    formula = "3;2919"
+  ) %>%
+  defData(
+    varname = "circuit",
+    dist = "categorical",
+    formula = circuit_probs
+  ) %>%
+  defData(
+    varname = "sex",
+    dist = "categorical",
+    formula = "0.22;0.78"
+  ) %>%
+  defData(
+    varname = "race",
+    dist = "categorical",
+    formula = "0.357;0.643"
+  ) %>%
+  defData(
+    varname = "sent_length",
+    dist = "categorical",
+    formula = "0.005;0.174;.105;.524;.139;.023;.029"
+  ) %>%
+  defData(
+    varname = "indic_num",
+    dist = "categorical",
+    formula = "0.596;0.254;0.150"
+  ) %>%
+  defData(
+    varname = "class4_agg_uuw",
+    dist = "categorical",
+    formula = "0.95;0.05"
+  )
+
+
+# generate data using data definitions
+dx <- genData(222000, dd)
+```
+
+
+### Initial Estimate of the Probation Population Generated from CHRI
+[... omitted ...]
+
+```{r adjustment, echo=TRUE, message=FALSE, warning=FALSE}
+# define functions
+recode_vars <- function(df) {
+  df %>%
+    mutate(
+        sent_date = as.Date("2010-01-01") + sent_date,
+        sent_length = if_else(sent_length < 7, sent_length * 180, 1440),
+        circuit = if_else(circuit == 24, 88L, circuit),
+        indic_num = indic_num + 29,
+        class4_agg_uuw = if_else(indic_num > 30, 0, class4_agg_uuw - 1)
+      )
+}
+
+add_initial_exit_date <- function(df) {
+  df %>%
+    mutate(
+      sent_length_multiplier = 1,
+      init_exit_date = sent_date %m+% days(round(sent_length * sent_length_multiplier))
+    )
+}
+
+add_prev_checks <- function(df, current_year) {
+  for (y in 2010:current_year) {
+    stock_date_check = as.Date(paste0(y, '/12/31'))
+    yr <- paste0('yr_', y)
+    df <-
+      df %>%
+      mutate(
+      !!yr := as.numeric(sent_date < stock_date_check & init_exit_date >= stock_date_check)
+    )
+  }
+  df
+}
+
+get_latest_year_pop <- function(df, year) {
+  df[["final_year"]] <- df[[paste0("yr_", year)]]
+  
+  df %>%
+    group_by(
+      data_year = year,
+      circuit,
+      indic_num
+    ) %>%
+    summarise(chri_stock_pop = sum(final_year))
+}
+
+get_adjust_weight <- function(aoic, year, latest_year_pop) {
+  aoic %>%
+    filter(data_year == year) %>%
+    left_join(latest_year_pop) %>%
+    mutate(adjust_weight = caseload / chri_stock_pop)
+}
+
+add_adjust_weight <- function(df, aoic, year) {
+  latest_year_pop <- get_latest_year_pop(df, year)
+  adjust_weight <- get_adjust_weight(aoic, year, latest_year_pop)
+	
+  left_join(df, adjust_weight)
+}
+
+
+# genearte "ps", a data frame holding the data in the real-data version
+latest_year <- 2017
+
+ps <-
+  dx %>%
+    recode_vars() %>%
+    add_initial_exit_date() %>%
+    add_prev_checks(latest_year) %>%
+    add_adjust_weight(aoic, latest_year)
+```
+
+[... omitted ...]
+
+```{r comparison, message=FALSE}
+# define functions
+get_c_post <- function(ps) {
+  ps %>%
+    mutate_at(
+      vars(matches("yr")),
+      funs(. * adjust_weight)
+    ) %>%
+    select(starts_with("yr")) %>%
+    summarise_all(sum) %>%
+    gather(
+      key = "chri_year",
+      value = "post_adjustment"
+    ) %>%
+    mutate(chri_year = parse_number(chri_year))
+}
+
+get_c_pre <- function(ps) {
+  ps %>%
+    select(starts_with("yr")) %>%
+    summarise_all(sum) %>%
+    gather(
+      key = "chri_year",
+      value = "pre_adjustment"
+    ) %>%
+    mutate(chri_year = parse_number(chri_year))
+}
+
+get_aoic_annual_caseload <- function(aoic) {
+  aoic %>%
+    group_by(data_year) %>%
+    summarise(caseload = sum(caseload))
+}
+
+get_comparison <- function(ps, aoic_caseload) {
+  c_pre <- get_c_pre(ps)
+  c_post <- get_c_post(ps)
+  
+  c_pre %>%
+    inner_join(c_post, by = "chri_year") %>%
+    left_join(aoic_caseload, by = c("chri_year" = "data_year")) %>%
+    mutate(chri_year = as.character(chri_year)) %>%
+    select(
+      "CY" = chri_year,
+      "CHRI Pre-Adjustment" = pre_adjustment,
+      "CHRI Post-Adjustment" = post_adjustment,
+      "AOIC Caseloads" = caseload
+    )
+}
+
+
+# apply functions
+aoic_caseload <- get_aoic_annual_caseload(aoic)
+comparison <- get_comparison(ps, aoic_caseload)
+
+
+# show comparison table
+comparison %>%
+  kable(
+    align = "c",
+    format.args = list(big.mark = ","),
+    caption = paste0(
+      "CHRI estimates are simulated from sentences;",
+      " AOIC data are from Statistical Reports"
+    )
+  )
+```
+
+
+### Future Projections
+[... omitted ...]
+
+```{r projection, message=FALSE, warning=FALSE}
+# define functions
+get_latest_stock_pop <- function(ps) {
+  ps %>%
+    filter(yr_2017 == 1) %>%
+    mutate(weight = adjust_weight)
+}
+
+get_future_admission <- function(ps, year) {
+  filter(ps, year(sent_date) == year)
+}
+
+update_future_admission <- function(future_admission, year, trend_pace) {
+    future_admission %>%
+      mutate(
+        sent_date = as.Date(paste(year, month(sent_date), day(sent_date), sep = "/")),
+        init_exit_date = sent_date %m+% days(sent_length),
+        weight = adjust_weight * trend_pace
+      )
+  }
+
+update_stock_pop <- function(stock_pop, future_admission, year, sim_num) {
+  stock_pop %>%
+    bind_rows(future_admission) %>%
+    mutate(stock_date_check = as.Date(paste0(year, '/12/31'))) %>%
+    filter(init_exit_date >= stock_date_check) %>%
+    mutate(mc_sim_num = sim_num)
+}
+
+get_single_projection_result <- function(stock_pop) {
+  stock_pop %>%
+    mutate(data_year = year(stock_date_check)) %>%
+    group_by(
+      mc_sim_num,
+      data_year,
+      indic_desc,
+      circuit
+    ) %>%
+    summarise(probation_population = sum(weight))
+}
+
+fill_in_projection_result <- function(
+  stock_pop,
+  future_admission,
+  start_year,
+  final_year,
+  mc_sim_num,
+  example
+) {
+  projection_result <- tibble(
+    mc_sim_num = numeric(),
+    indic_desc = character(),
+    circuit = numeric(),
+    probation_population = numeric()
+  )
+	
+  for (year in start_year:final_year) {
+    trend_pace <- 1
+    if (example == "1PctDecline") {
+      trend_pace <- 1 - (year - start_year) / 100
+    } else if (example == "montecarlo") {
+      trend_pace <- 1 + runif(1,-0.05, 0.05)
+    }
+    
+    future_admission <- update_future_admission(future_admission, year, trend_pace)
+    if (example == "Class4AggUUW") {
+      future_admission$weight[future_admission$class4_agg_uuw == 1] <- 0
+    }
+    
+    stock_pop <- update_stock_pop(stock_pop, future_admission, year, mc_sim_num)
+    
+    Remainder <- floor(sum(stock_pop$weight))
+    print(paste0(year, " end of year population: ", Remainder))
+    
+    results <- get_single_projection_result(stock_pop)
+    projection_result <- bind_rows(projection_result, results)
+  }
+  projection_result
+}
+
+get_probation_projection <- function(
+  ps,
+  pull_year,
+  start_year,
+  final_year,
+  mc_sim_num,
+  example
+) {
+  stock_pop <- get_latest_stock_pop(ps)
+  future_admission <- get_future_admission(ps, pull_year)
+  
+  fill_in_projection_result(
+    stock_pop,
+    future_admission,
+    start_year,
+    final_year,
+    mc_sim_num,
+    example
+  )
+}
+```
+
+
+### Monte Carlo Simulation
+[... omitted ...]
+
+```{r montecarlo, warning=FALSE}
+# define functions
+run_simulation <- function(
+  ps,
+  pull_year,
+  start_year,
+  final_year,
+  mc_runs,
+  example
+) {
+  df <- tibble(
+    mc_sim_num = numeric(),
+    indic_desc = character(),
+    circuit = numeric(),
+    probation_population = numeric(),
+    data_year = numeric()
+  )
+  
+  for (i in 1:mc_runs) {
+    print(paste0("Begin Simulation #", i))
+    
+    i_results <- get_probation_projection(
+      ps,
+      pull_year,
+      start_year,
+      final_year,
+      i,
+      example
+    )
+    
+    df <- bind_rows(df, i_results)
+  }
+  df
+}
+
+print_complete_message <- function(start_time, end_time, mc_runs) {
+  elapsed_time <- end_time - start_time
+  message <- paste0(
+    "Simulation complete, performed ",
+    mc_runs,
+    " simulations in ",
+    round(elapsed_time, 2),
+    " ",
+    attr(elapsed_time, "units"),
+    "."
+  )
+  print(message)
+}
+
+get_projection_result <- function(
+  ps,
+  pull_year,
+  start_year,
+  final_year,
+  mc_runs = 1,
+  example = "default"
+) {
+  start_time <- Sys.time()
+  projection_result <-
+    run_simulation(ps, pull_year, start_year, final_year, mc_runs, example)
+  end_time <- Sys.time()
+  print_complete_message (start_time, end_time, mc_runs)
+  
+  projection_result
+}
+
+
+# set parameter values
+pull_year <- latest_year
+start_year <- 2018
+final_year <- 2035
+
+
+# run simulation
+projection_result <- get_projection_result(
+  ps,
+  pull_year,
+  start_year,
+  final_year
+)
+```
+
+```{r plot, message=FALSE, warning=FALSE}
+# define functions
+get_historical_projection <- function(projection_result, aoic) {
+  projection_result %>%
+    mutate(caseload = probation_population) %>%
+    bind_rows(aoic) %>%
+    group_by(data_year, indic_desc) %>%
+    summarise(caseload = sum(caseload))
+}
+
+get_historical_projection_caseload <- function(projection_result, aoic) {
+  projection_result %>%
+    mutate(caseload = probation_population) %>%
+    bind_rows(aoic) %>%
+    group_by(
+      data_year,
+      indic_desc,
+      circuit
+    ) %>%
+    arrange(circuit) %>%
+    summarise(caseload = sum(caseload)) %>%
+    mutate(circuit = if_else(circuit == 88, "Cook", as.character(circuit)))
+}
+
+
+# get historical projections
+hp <- get_historical_projection(projection_result, aoic)
+hpc <- get_historical_projection_caseload(projection_result, aoic)
+
+
+# build plots
+hp_plot <-
+  hp %>%
+  ggplot(aes(x = data_year, y = caseload)) +
+  geom_line(aes(col = gsub(' [A-z ]*', '' , indic_desc))) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Historical and Projected Probation Populations",
+    y = "Caseloads",
+    x = "Year",
+    color = "Group"
+  ) +
+  theme_minimal()
+
+hpc_plot <-
+  hpc %>%
+  ggplot() +
+  geom_line(
+    aes(
+      x = data_year,
+      y = caseload,
+      col = gsub(' [A-z ]*', '' , indic_desc)
+    )
+  ) +
+  scale_y_continuous(
+    labels = scales::comma,
+    breaks = scales::pretty_breaks(n = 3)
+  ) +
+  labs(
+    title = "Historical and Projected Probation Populations by Circuit",
+    y = "Caseloads",
+    color = ""
+  ) +
+  facet_wrap(~circuit, scales = "free") +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_blank()
+  )
+
+
+# show plots
+hp_plot
+hpc_plot
+```
+
+
+### Adjustments to Probation Admissions
+[... omitted ...]
+
+#### Example - 1% YOY decline, non-compounded
+[... omitted ...]
+
+```{r one_pct_decline, message=FALSE, warning=FALSE, echo=TRUE}
+# run simulation
+projection_result <- get_projection_result(
+  ps,
+  pull_year,
+  start_year,
+  final_year,
+  example = "1PctDecline"
+)
+
+hp_1 <- get_historical_projection(projection_result, aoic)
+
+
+# show plot
+hp_plot +
+  geom_line(
+    data = hp_1,
+    aes(
+      x = data_year,
+      y = caseload,
+      col = gsub(' [A-z ]*', '' , indic_desc),
+      linetype = gsub(' [A-z ]*', '' , indic_desc)
+    ),
+    show_guide = FALSE
+  ) +
+  labs(
+    title = "Status Quo and Projected Probation Populations",
+    subtitle = "1% annual decline in admissions",
+    y = "Caseloads",
+    x = "Year",
+    color = "Group"
+  )
+```
+
+
+#### Example - Class 4 Aggravated UUW Non-Probationable
+[... omitted ...]
+
+```{r class4_agg_uuw, message=FALSE, warning=FALSE, echo=TRUE}
+# run simulation
+projection_result <- get_projection_result(
+  ps,
+  pull_year,
+  start_year,
+  final_year,
+  example = "Class4AggUUW"
+)
+
+hp_2 <- get_historical_projection(projection_result, aoic)
+
+
+# show plot
+hp_plot +
+  geom_line(
+    data = hp_2,
+    aes(
+      x = data_year,
+      y = caseload,
+      col = gsub(' [A-z ]*', '' , indic_desc),
+      linetype = gsub(' [A-z ]*', '' , indic_desc)
+    ),
+    show_guide = FALSE
+  ) +
+  labs(
+    title = "Status Quo and Projected Probation Populations",
+    subtitle = "Making Class 4 Agg UUW Non-Probationable",
+    y = "Caseloads",
+    x = "Year",
+    color = "Group"
+  )
+```
+
+
+#### Monte Carlo simulation example
+[... omitted ...]
+
+```{r montecarlo_example, message=FALSE, warning=FALSE}
+# define functions
+get_mc_plot_data <- function(projection_result, aoic_caseload) {
+  projection_result %>%
+    mutate(
+      caseload = probation_population,
+      Simulation = as.factor(mc_sim_num)
+    ) %>%
+    group_by(Simulation, data_year) %>%
+    summarise(caseload = sum(caseload)) %>%
+    bind_rows(aoic_caseload)
+}
+
+get_mc_plot_data2 <- function(projection_result) {
+  projection_result %>%
+    mutate(caseload = probation_population) %>%
+    group_by(mc_sim_num, data_year) %>%
+    summarise(caseload = sum(caseload)) %>%
+    group_by(data_year) %>%
+    summarise(
+      min_caseload = min(caseload),
+      max_caseload = max(caseload),
+      avg_caseload = mean(caseload)
+    )
+}
+
+
+# run simulation
+projection_result <- get_projection_result(
+  ps,
+  pull_year,
+  start_year,
+  final_year,
+  mc_runs = 20,
+  example = "montecarlo"
+)
+
+
+# apply functions
+mc_plot_data <- get_mc_plot_data(projection_result, aoic_caseload)
+mc_plot_data2 <- get_mc_plot_data2(projection_result)
+
+
+# display plots
+mc_plot_data %>%
+  ggplot(aes(x = data_year, y = caseload)) +
+  geom_line(aes(color = Simulation)) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Historical and Projected Probation Populations",
+    y = "Caseloads",
+    x = "Year"
+  )
+
+aoic_caseload %>%
+  ggplot(aes(x = data_year, y = caseload)) +
+  geom_line() +
+  geom_ribbon(
+    data = mc_plot_data2,
+    aes(
+      x = data_year,
+      y = avg_caseload,
+      ymin = min_caseload,
+      ymax = max_caseload
+    ),
+    fill = "#0000FF"
+  ) +
+  geom_line(
+    data = mc_plot_data2,
+    aes(y = avg_caseload),
+    color = "red",
+    size = 1.5
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Historical and Projected Probation Populations",
+    y = "Caseloads",
+    x = "Year"
+  ) +
+  theme(legend.position = "None")
+```
+
+### Limitations
+[... omitted ...]
+
+### Final Code
+```{r showblocks, ref.label=c("setup", "dependencies", "simulated_data", "adjustment", "comparison", "projection", "montecarlo"), eval=FALSE}
+```
+
+
