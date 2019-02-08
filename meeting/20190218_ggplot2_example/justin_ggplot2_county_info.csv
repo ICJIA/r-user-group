@@ -1,0 +1,103 @@
+GEOID_2015,FIPS,ICJIAcodes,State,County Name,ILRegion,Rural_Urban_2010,%rural_2010
+17031,31,16,IL,Cook,Northern - Cook,4,0.0
+17043,43,22,IL,DuPage,Northern minus Cook,4,0.0
+17097,97,49,IL,Lake,Northern minus Cook,3,1.3
+17089,89,45,IL,Kane,Northern minus Cook,3,3.6
+17197,197,99,IL,Will,Northern minus Cook,3,3.9
+17201,201,101,IL,Winnebago,Northern minus Cook,3,7.9
+17163,163,82,IL,St. Clair,South,3,9.8
+17111,111,56,IL,McHenry,Northern minus Cook,3,9.9
+17093,93,47,IL,Kendall,Northern minus Cook,3,10.4
+17161,161,81,IL,Rock Island,Central,3,10.9
+17019,19,10,IL,Champaign,Central,3,12.7
+17119,119,60,IL,Madison,South,3,13.3
+17167,167,84,IL,Sangamon,Central,3,14.1
+17143,143,72,IL,Peoria,Central,3,14.6
+17115,115,58,IL,Macon,Central,3,15.3
+17113,113,57,IL,McLean,Central,3,16.5
+17007,7,4,IL,Boone,Northern minus Cook,3,19.4
+17037,37,19,IL,DeKalb,Northern minus Cook,3,20.3
+17179,179,90,IL,Tazewell,Central,3,20.4
+17029,29,15,IL,Coles,Central,3,24.3
+17095,95,48,IL,Knox,Central,3,24.3
+17063,63,32,IL,Grundy,Northern minus Cook,3,24.4
+17091,91,46,IL,Kankakee,Central,3,24.5
+17109,109,55,IL,McDonough,Central,3,29.5
+17099,99,50,IL,LaSalle,Northern minus Cook,3,30.2
+17183,183,92,IL,Vermilion,Central,3,31.3
+17001,1,1,IL,Adams,Central,3,32.6
+17199,199,100,IL,Williamson,South,3,34.8
+17137,137,69,IL,Morgan,Central,3,36.2
+17077,77,39,IL,Jackson,South,3,37.2
+17195,195,98,IL,Whiteside,Northern minus Cook,3,37.3
+17185,185,93,IL,Wabash,South,3,38.9
+17107,107,54,IL,Logan,Central,3,39.9
+17177,177,89,IL,Stephenson,Northern minus Cook,3,40.1
+17105,105,53,IL,Livingston,Central,3,40.8
+17009,9,5,IL,Brown,Central,3,41.1
+17133,133,67,IL,Monroe,South,3,41.4
+17135,135,68,IL,Montgomery,Central,3,41.6
+17053,53,27,IL,Ford,Central,3,41.8
+17157,157,79,IL,Randolph,South,3,42.6
+17021,21,11,IL,Christian,Central,3,43.5
+17159,159,80,IL,Richland,South,3,43.5
+17145,145,73,IL,Perry,South,3,43.6
+17165,165,83,IL,Saline,South,3,43.7
+17121,121,61,IL,Marion,South,3,45.1
+17187,187,94,IL,Warren,Central,3,45.5
+17141,141,71,IL,Ogle,Northern minus Cook,3,47.1
+17055,55,28,IL,Franklin,South,3,48.6
+17039,39,20,IL,De Witt,Central,3,48.8
+17027,27,14,IL,Clinton,South,3,48.8
+17073,73,37,IL,Henry,Central,2,50.3
+17127,127,64,IL,Massac,South,2,50.5
+17045,45,23,IL,Edgar,Central,2,51.8
+17017,17,9,IL,Cass,Central,2,52.1
+17103,103,52,IL,Lee,Northern minus Cook,2,53.2
+17203,203,102,IL,Woodford,Central,2,54.9
+17011,11,6,IL,Bureau,Central,2,57.4
+17169,169,85,IL,Schuyler,Central,2,57.6
+17101,101,51,IL,Lawrence,South,2,58.0
+17117,117,59,IL,Macoupin,Central,2,58.5
+17081,81,41,IL,Jefferson,South,2,58.8
+17023,23,12,IL,Clark,South,2,59.5
+17049,49,25,IL,Effingham,South,2,59.7
+17057,57,29,IL,Fulton,Central,2,60.0
+17033,33,17,IL,Crawford,South,2,60.2
+17083,83,42,IL,Jersey,South,2,60.6
+17005,5,3,IL,Bond,South,2,60.7
+17041,41,21,IL,Douglas,Central,2,61.6
+17003,3,2,IL,Alexander,South,2,61.9
+17193,193,97,IL,White,South,2,62.0
+17025,25,13,IL,Clay,South,2,64.7
+17181,181,91,IL,Union,South,2,65.9
+17051,51,26,IL,Fayette,South,2,67.0
+17147,147,74,IL,Piatt,Central,2,67.7
+17065,65,33,IL,Hamilton,South,2,68.1
+17139,139,70,IL,Moultrie,Central,2,69.2
+17079,79,40,IL,Jasper,South,2,69.9
+17191,191,96,IL,Wayne,South,2,69.9
+17061,61,31,IL,Greene,Central,2,70.8
+17067,67,34,IL,Hancock,Central,2,71.0
+17075,75,38,IL,Iroquois,Central,2,71.7
+17149,149,75,IL,Pike,Central,2,72.3
+17085,85,43,IL,Jo Daviess,Northern minus Cook,2,72.6
+17189,189,95,IL,Washington,South,2,73.6
+17129,129,65,IL,Menard,Central,2,75.7
+17125,125,63,IL,Mason,Central,2,77.5
+17173,173,87,IL,Shelby,Central,2,77.7
+17131,131,66,IL,Mercer,Central,2,77.8
+17015,15,8,IL,Carroll,Northern minus Cook,2,81.9
+17071,71,36,IL,Henderson,Central,2,99.7
+17013,13,7,IL,Calhoun,South,1,100.0
+17035,35,18,IL,Cumberland,South,1,100.0
+17047,47,24,IL,Edwards,South,1,100.0
+17059,59,30,IL,Gallatin,South,1,100.0
+17069,69,35,IL,Hardin,South,1,100.0
+17087,87,44,IL,Johnson,South,1,100.0
+17123,123,62,IL,Marshall,Central,1,100.0
+17151,151,76,IL,Pope,South,1,100.0
+17153,153,77,IL,Pulaski,South,1,100.0
+17155,155,78,IL,Putnam,Central,1,100.0
+17171,171,86,IL,Scott,Central,1,100.0
+17175,175,88,IL,Stark,Central,1,100.0

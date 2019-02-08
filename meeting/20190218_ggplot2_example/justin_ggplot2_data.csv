@@ -1,0 +1,103 @@
+id,agency,type2,county,type,geoid,fips,icjiacodes,state,ilregion,part
+1,301,law enforcement,IL,Cook,17031,31,16,IL,Northern - Cook,1
+2,302,law enforcement,IL,DuPage,17043,43,22,IL,Northern minus Cook,1
+3,303,law enforcement,IL,Lake,17097,97,49,IL,Northern minus Cook,1
+4,304,law enforcement,IL,Kane,17089,89,45,IL,Northern minus Cook,1
+5,305,law enforcement,IL,Will,17197,197,99,IL,Northern minus Cook,1
+6,306,law enforcement,IL,Winnebago,17201,201,101,IL,Northern minus Cook,1
+7,307,law enforcement,IL,St. Clair,17163,163,82,IL,South,1
+8,308,law enforcement,IL,McHenry,17111,111,56,IL,Northern minus Cook,0
+9,309,law enforcement,IL,Kendall,17093,93,47,IL,Northern minus Cook,1
+10,310,law enforcement,IL,Rock Island,17161,161,81,IL,Central,0
+11,311,law enforcement,IL,Champaign,17019,19,10,IL,Central,0
+12,312,law enforcement,IL,Madison,17119,119,60,IL,South,0
+13,313,law enforcement,IL,Sangamon,17167,167,84,IL,Central,1
+14,314,law enforcement,IL,Peoria,17143,143,72,IL,Central,0
+15,315,law enforcement,IL,Macon,17115,115,58,IL,Central,0
+16,316,law enforcement,IL,McLean,17113,113,57,IL,Central,1
+17,317,law enforcement,IL,Boone,17007,7,4,IL,Northern minus Cook,1
+18,318,law enforcement,IL,DeKalb,17037,37,19,IL,Northern minus Cook,0
+19,319,law enforcement,IL,Tazewell,17179,179,90,IL,Central,1
+20,320,law enforcement,IL,Coles,17029,29,15,IL,Central,0
+21,321,law enforcement,IL,Knox,17095,95,48,IL,Central,1
+22,322,law enforcement,IL,Grundy,17063,63,32,IL,Northern minus Cook,1
+23,323,law enforcement,IL,Kankakee,17091,91,46,IL,Central,1
+24,324,law enforcement,IL,McDonough,17109,109,55,IL,Central,0
+25,325,law enforcement,IL,LaSalle,17099,99,50,IL,Northern minus Cook,1
+26,326,law enforcement,IL,Vermilion,17183,183,92,IL,Central,0
+27,327,law enforcement,IL,Adams,17001,1,1,IL,Central,1
+28,328,law enforcement,IL,Williamson,17199,199,100,IL,South,1
+29,329,law enforcement,IL,Morgan,17137,137,69,IL,Central,0
+30,330,law enforcement,IL,Jackson,17077,77,39,IL,South,1
+31,331,law enforcement,IL,Whiteside,17195,195,98,IL,Northern minus Cook,1
+32,332,law enforcement,IL,Wabash,17185,185,93,IL,South,1
+33,333,law enforcement,IL,Logan,17107,107,54,IL,Central,1
+34,334,law enforcement,IL,Stephenson,17177,177,89,IL,Northern minus Cook,0
+35,335,law enforcement,IL,Livingston,17105,105,53,IL,Central,1
+36,336,law enforcement,IL,Brown,17009,9,5,IL,Central,1
+37,337,law enforcement,IL,Monroe,17133,133,67,IL,South,1
+38,338,law enforcement,IL,Montgomery,17135,135,68,IL,Central,0
+39,339,law enforcement,IL,Ford,17053,53,27,IL,Central,1
+40,340,law enforcement,IL,Randolph,17157,157,79,IL,South,0
+41,341,law enforcement,IL,Christian,17021,21,11,IL,Central,1
+42,342,law enforcement,IL,Richland,17159,159,80,IL,South,0
+43,343,law enforcement,IL,Perry,17145,145,73,IL,South,0
+44,344,law enforcement,IL,Saline,17165,165,83,IL,South,0
+45,345,law enforcement,IL,Marion,17121,121,61,IL,South,1
+46,346,law enforcement,IL,Warren,17187,187,94,IL,Central,1
+47,347,law enforcement,IL,Ogle,17141,141,71,IL,Northern minus Cook,0
+48,348,law enforcement,IL,Franklin,17055,55,28,IL,South,1
+49,349,law enforcement,IL,De Witt,17039,39,20,IL,Central,1
+50,350,law enforcement,IL,Clinton,17027,27,14,IL,South,0
+51,351,law enforcement,IL,Henry,17073,73,37,IL,Central,1
+52,352,law enforcement,IL,Massac,17127,127,64,IL,South,1
+53,353,law enforcement,IL,Edgar,17045,45,23,IL,Central,1
+54,354,law enforcement,IL,Cass,17017,17,9,IL,Central,1
+55,355,law enforcement,IL,Lee,17103,103,52,IL,Northern minus Cook,0
+56,356,law enforcement,IL,Woodford,17203,203,102,IL,Central,0
+57,357,law enforcement,IL,Bureau,17011,11,6,IL,Central,1
+58,358,law enforcement,IL,Schuyler,17169,169,85,IL,Central,0
+59,359,law enforcement,IL,Lawrence,17101,101,51,IL,South,1
+60,360,law enforcement,IL,Macoupin,17117,117,59,IL,Central,1
+61,361,law enforcement,IL,Jefferson,17081,81,41,IL,South,0
+62,362,law enforcement,IL,Clark,17023,23,12,IL,South,0
+63,363,law enforcement,IL,Effingham,17049,49,25,IL,South,1
+64,364,law enforcement,IL,Fulton,17057,57,29,IL,Central,1
+65,365,law enforcement,IL,Crawford,17033,33,17,IL,South,1
+66,366,law enforcement,IL,Jersey,17083,83,42,IL,South,1
+67,367,law enforcement,IL,Bond,17005,5,3,IL,South,0
+68,368,law enforcement,IL,Douglas,17041,41,21,IL,Central,1
+69,369,law enforcement,IL,Alexander,17003,3,2,IL,South,1
+70,370,law enforcement,IL,White,17193,193,97,IL,South,1
+71,371,law enforcement,IL,Clay,17025,25,13,IL,South,1
+72,372,law enforcement,IL,Union,17181,181,91,IL,South,0
+73,373,law enforcement,IL,Fayette,17051,51,26,IL,South,0
+74,374,law enforcement,IL,Piatt,17147,147,74,IL,Central,0
+75,375,law enforcement,IL,Hamilton,17065,65,33,IL,South,1
+76,376,law enforcement,IL,Moultrie,17139,139,70,IL,Central,0
+77,377,law enforcement,IL,Jasper,17079,79,40,IL,South,0
+78,378,law enforcement,IL,Wayne,17191,191,96,IL,South,0
+79,379,law enforcement,IL,Greene,17061,61,31,IL,Central,0
+80,380,law enforcement,IL,Hancock,17067,67,34,IL,Central,1
+81,381,law enforcement,IL,Iroquois,17075,75,38,IL,Central,1
+82,382,law enforcement,IL,Pike,17149,149,75,IL,Central,1
+83,383,law enforcement,IL,Jo Daviess,17085,85,43,IL,Northern minus Cook,0
+84,384,law enforcement,IL,Washington,17189,189,95,IL,South,0
+85,385,law enforcement,IL,Menard,17129,129,65,IL,Central,1
+86,386,law enforcement,IL,Mason,17125,125,63,IL,Central,1
+87,387,law enforcement,IL,Shelby,17173,173,87,IL,Central,1
+88,388,law enforcement,IL,Mercer,17131,131,66,IL,Central,0
+89,389,law enforcement,IL,Carroll,17015,15,8,IL,Northern minus Cook,1
+90,390,law enforcement,IL,Henderson,17071,71,36,IL,Central,0
+91,391,law enforcement,IL,Calhoun,17013,13,7,IL,South,1
+92,392,law enforcement,IL,Cumberland,17035,35,18,IL,South,0
+93,393,law enforcement,IL,Edwards,17047,47,24,IL,South,0
+94,394,law enforcement,IL,Gallatin,17059,59,30,IL,South,0
+95,395,law enforcement,IL,Hardin,17069,69,35,IL,South,0
+96,396,law enforcement,IL,Johnson,17087,87,44,IL,South,0
+97,397,law enforcement,IL,Marshall,17123,123,62,IL,Central,1
+98,398,law enforcement,IL,Pope,17151,151,76,IL,South,0
+99,399,law enforcement,IL,Pulaski,17153,153,77,IL,South,0
+100,400,law enforcement,IL,Putnam,17155,155,78,IL,Central,1
+101,401,law enforcement,IL,Scott,17171,171,86,IL,Central,0
+102,402,law enforcement,IL,Stark,17175,175,88,IL,Central,1
