@@ -1,0 +1,231 @@
+---
+title: "Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##setup
+
+```{r setup2}
+# load utils
+source("utils.R")$value
+
+
+# load libraries
+pkgs <- c("dplyr", "sjstats", "psych")
+utils$install_and_load_pkgs(pkgs)
+
+
+# load data
+sa_calls <- utils$load_csv()
+df_gender <- utils$load_csv()
+df_center <- utils$load_csv()
+df_age <- utils$load_csv()
+```
+
+
+## Gender
+```{r}
+head(df_gender)
+```
+
+```{r}
+chisq.test(df_gender)
+cramer(df_gender)
+```
+
+
+```{r}
+victim_calls <-
+  sa_calls %>%
+  filter(
+    Sex %in% c("Male", "Female"),
+    ClientType == "Victim"
+  )
+
+victim_calls %>%
+  filter(TotalTime <= 3)
+  ggplot(aes(x = Sex, y = TotalTime)) +
+  geom_boxplot()
+```
+
+
+
+```{r}
+mod <- lm(TotalTime ~ Sex, data = filter(victim_calls <= 1))
+
+utils$test_lm(mod)
+```
+
+
+```{r}
+describeBy(sa_calls$TotalTime, group = sa_calls$Sex)
+```
+
+```{r}
+describeBy(sa_calls$TotalTime, group = sa_calls$Call_duration)
+```
+
+```{r}
+fillered_calls <-
+  victim_calls %>%
+  filter(TotalTime <= 3) %>%
+  mutate(Sex = factor(Sex))
+
+describeBy(filtered_calls$TotalTime, group = filtered_calls$Sex)
+```
+
+```{r}
+t.test(TotalTime ~ Sex, data = filtered_calls)
+cohen.d(TotalTime ~ Sex, data = filtered_calls)
+ks.test(ClientAgeXDate$Age, filter(sa_calls, ClientType=='Victim')$Age)
+
+```
+
+```{r}
+tbl_duration <- table(factor(victim_calls$Sex), victim_calls$Call_duration)
+
+chisq.test(tbl_duration)
+cramer(tbl_duration)
+```
+
+```{r}
+tbl_referral <- table(factor(victim_calls$Sex), victim_calls$ReferralMade)
+
+chisq.test(tbl_referral)
+cramer(tbl_referral)
+```
+
+
+## Center
+
+```{r}
+head(df_center)
+```
+
+Chi Square Test whether Centers have different weekly patterns. This should probably be redone with just weekday vs weekend.
+```{r}
+chisq.test(df_center)
+cramer(df_center)
+```
+
+```{r}
+cramer(table(sa_calls$CenterName, lubridate::wday(sa_calls$Date, label = TRUE)))
+```
+
+```{r}
+cramer(table(sa_calls$CenterName, sa_calls$WorkDay))
+```
+
+
+## Age
+```{r}
+head(df_age)
+```
+
+### Plots
+
+#### Histogram: Victim callers
+```{r}
+# Victim Callers
+sa_calls %>%
+  filter(Age > 1, ClientType == 'Victim') %>%
+  ggplot(aes(Age)) + 
+  geom_histogram(
+    breaks = seq(1.5, 80.5, by=1),
+    colour="black",
+    fill="white"
+  ) +
+  labs(
+    title = "Age of Callers",
+    x = "Age in Years",
+    y = "Number of Callers"
+  )
+```
+
+#### Histogram: Clients
+```{r}
+# Clients
+ClientAgeXDate %>%
+  filter(Age > 1)%>%
+  ggplot(aes(Age)) + 
+  geom_histogram(
+    breaks = seq(1.5, 80.5, by = 1),
+    colour = "black",
+    fill = "white"
+  ) +
+  labs(
+    title = "Age of Clients",
+    x = "Age in Years",
+    y = "Number of Clients"
+  )
+```
+
+
+#### Distribution: combined
+```{r}
+# Combined Plot of Distribution
+bind_rows(
+  #Client Data
+  filter(ClientAgeXDate,between(Age,1,100)) %>%
+    add_column('Type') %>%
+    mutate(Type='Client') %>%
+    select(Age,Type),  
+  #Caller Data
+  filter(AllSACalls,between(Age,1,100) & ClientType=='Victim') %>%
+    add_column('Type') %>%
+    mutate(Type='Caller') %>%
+    select(Age,Type)
+) %>%
+  ggplot(aes(x = Age, fill = Type)) + geom_density(alpha = 0.5) +
+  labs(title = "Age Distribution of Clients and Callers", x="Age in Years", y="Density")
+```
+
+
+### Test
+```{r}
+#KS non-parametric test of different distributions
+ks.test(ClientAgeXDate$Age, filter(AllSACalls,ClientType=='Victim')$Age )
+
+# describe age at assault           
+ClientAgeXDate %>%
+  filter(
+   between(Age, 2, 100),
+   between(AgeatPrim, 2, 100)
+  ) %>%
+  mutate(Diff = Age - AgeatPrim) %>%
+  describe()
+```
+
+
+#### Distribution: Age at assault
+```{r}
+# plot age at assault
+filter(ClientAgeXDate,
+       between(ClientAgeXDate$Age,2,100)
+       &between(ClientAgeXDate$AgeatPrim,2,100)
+       
+) %>% mutate(Diff=.$Age-.$AgeatPrim) %>%
+  ggplot(aes(x = AgeatPrim)) + geom_density(alpha = 0.5) +
+  labs(title = "Distribution of Estimated Age at Assault", x="Age in Years", y="Density")+
+  scale_x_continuous(breaks=c(0,1,5,10,15,18,22,30,40,50,60,70,80,90,100))
+```
+
+
+#### Histogram: Age at assault
+```{r}
+#histogram
+filter(ClientAgeXDate,
+       between(ClientAgeXDate$Age,2,100)
+       &between(ClientAgeXDate$AgeatPrim,2,100)
+       
+) %>% mutate(Diff=.$Age-.$AgeatPrim) %>%
+  ggplot(aes(x = AgeatPrim)) +
+  geom_histogram(breaks=seq(2,80, by=1), colour="black", fill="white") +
+  labs(title = "Estimated Age at Assault", x="Age in Years", y="Clients")+
+  scale_x_continuous(breaks=c(2,5,10,12,14,16,18,20,22,25,30,35,40,50,60,70,80))  
+```
+
