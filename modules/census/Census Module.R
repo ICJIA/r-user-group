@@ -156,11 +156,11 @@ extract_letter_p <- function(x) {
 }
 
 extract_number_p <- function(x){
-  if_else(nchar(x) == 8, substr(x, 7, 8), substr(x, 6, 7))
+  as.numeric(if_else(nchar(x) == 8, substr(x, 7, 8), substr(x, 6, 7)))
 }
 
 recode_age_p <- function(x) {
-  pn <- as.numeric(extract_number_p(x))
+  pn <- extract_number_p(x)
   pn <- if_else(between(pn, 27, 49), pn - 24, pn)
 
   case_when(
@@ -224,7 +224,7 @@ recode_ethnicity_p <- function(x) {
 }
 
 recode_gender_p <- function(x) {
-  pn <- as.numeric(extract_number_p(x))
+  pn <- extract_number_p(x)
 
   case_when(
     between(pn, 2, 25) ~ 'Male',
@@ -238,11 +238,11 @@ extract_letter_b <- function(x) {
 }
 
 extract_number_b <- function(x){
-  if_else(nchar(x) == 11, substr(x, 10, 11), substr(x, 9, 10))
+  as.numeric(if_else(nchar(x) == 11, substr(x, 10, 11), substr(x, 9, 10)))
 }
 
 recode_age_b <- function(x) {
-  bn <- as.numeric(extract_number_b(x))
+  bn <- extract_number_b(x)
   bl <- extract_letter_b(x)
 
   output <- case_when(
@@ -330,7 +330,7 @@ recode_ethnicity_b <- function(x) {
 }
 
 recode_gender_b <- function(x) {
-  bn <- as.numeric(extract_number_b(x))
+  bn <- extract_number_b(x)
   bl <- extract_letter_b(x)
   
   case_when(
