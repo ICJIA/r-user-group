@@ -21,21 +21,16 @@
 
 # 4. Provide convenience functions for random sampling
 
-### Load libraries etc. -------
-
-library(tidycensus) # census data connection
-# setup the key right after tidycensus
-# api.key.install(key="616907b994896c1dde3f6ba7e408703e51e9fd26") is Karl Gruschow's
-census_api_key(
-  key = "616907b994896c1dde3f6ba7e408703e51e9fd26",
-  install = TRUE,
-  overwrite = TRUE
-)
-library(tidyverse) # because useful
+### Setup -------
+library(tidycensus)
+library(tidyverse)
 library(doParallel)
-registerDoParallel()
 library(data.table)
 library(foreach)
+
+api_key <- "616907b994896c1dde3f6ba7e408703e51e9fd26" # Karl Gruschow's key
+census_api_key(key = api_key, install = TRUE, overwrite = TRUE)
+registerDoParallel()
 
 ### load the variables from the census API for the latest Census and ACS ----
 # historically these have been constant
