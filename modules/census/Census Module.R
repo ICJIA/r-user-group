@@ -34,32 +34,32 @@ registerDoParallel()
 
 ### load the variables from the census API for the latest Census and ACS ----
 # historically these have been constant
-All_Census_Vars <- load_variables(2010, "sf1", cache = TRUE)
-All_ACS_VARS <- load_variables(2018, "acs5", cache = TRUE)
+vars_census <- load_variables(2010, "sf1", cache = TRUE)
+vars_acs <- load_variables(2018, "acs5", cache = TRUE)
 
-varsP12 <- subset(All_Census_Vars, grepl("^P012", All_Census_Vars$name))
-varsB1001 <- subset(All_ACS_VARS, grepl("^B01001", All_ACS_VARS$name))
+vars_p12 <- subset(vars_census, grepl("^P012", census_vars$name))
+vars_b1001 <- subset(vars_acs, grepl("^B01001", acs_vars$name))
 
 ### Functions for loading census and ACS block and block group level data for Illinois ----
 
-get_p12_blocks_by_county <- function (x, y = 2010) {
+get_p12_blocks_by_county <- function (county, year = 2010) {
   get_decennial(
     geography = "block",
-    variables = varsP12$name,
-    year = y,
+    variables = vars_p12$name,
+    year = year,
     state = 17,
-    county = x
+    county = county
   )
 }
 
-get_acs_tract_by_county <- function (x, y = 2018) {
+get_acs_tract_by_county <- function (county, year = 2018) {
   get_acs(
     geography = "tract",
-    variables = varsB1001$name,
+    variables = vars_b1001$name,
     survey="acs5",
-    year = y,
+    year = year,
     state = 17,
-    county = x
+    county = county
   )
 }
 
@@ -95,9 +95,9 @@ load_illinois_blocks_by_county <- function (
     output[, .(
       GEOID,
       value,
-      gender = gender_of_p(variable),
-      race = ethnicity_of_p(variable),
-      age = age_of_p(variable)
+      gender = recode_gender_p(variable),
+      race = recode_ethnicity_p(variable),
+      age = recode_age_p(variable)
     )]
   } else {
     output
@@ -130,9 +130,9 @@ load_illinois_acs_by_county <- function(
     output[, .(
       GEOID,
       estimate,
-      gender = gender_of_b(variable),
-      race = ethnicity_of_b(variable),
-      age = age_of_b(variable)
+      gender = recode_gender_b(variable),
+      race = recode_ethnicity_b(variable),
+      age = recode_age_b(variable)
     )]
   } else {
     output
@@ -153,19 +153,16 @@ load_illinois_acs_by_county <- function(
 ### 
 
 ##### Census Demographic Variable processing ----
-
-# extract letter as string from P12 variable name
-letter_of_p <- function(x) {
+extract_letter_p <- function(x) {
   if_else(nchar(x) == 8, substr(x, 5, 5), '')
 }
 
-# extract numeric portion of P12 variable name (age/gender category)
-number_of_p <- function(x){
+extract_number_p <- function(x){
   if_else(nchar(x) == 8, substr(x, 7, 8), substr(x, 6, 7))
 }
 
-age_of_p <- function(x) {
-  pn <- as.numeric(number_of_p(x))
+recode_age_p <- function(x) {
+  pn <- as.numeric(extract_number_p(x))
   pn <- if_else(between(pn, 27, 49), pn - 24, pn)
 
   case_when(
@@ -208,33 +205,9 @@ age_of_p <- function(x) {
   )
 }
 
-
-gender_of_p <- function(x) {
-  pn <- as.numeric(number_of_p(x))
-
-  case_when(
-    between(pn, 2, 25) ~ 'Male',
-    between(pn, 26, 49) ~ 'Female',
-    TRUE ~ 'Total'
-  )
-}
-
-gender_of_b <- function(x) {
-  pn <- as.numeric(number_of_b(x))
-
-  case_when(
-    letter_of_b(x) == '' & between(pn, 2, 25) ~ 'Male',
-    letter_of_b(x) == '' & between(pn, 26, 49) ~ 'Female',
-    letter_of_b(x) != '' & between(pn, 2, 16) ~ 'Male',
-    letter_of_b(x) != '' & between(pn, 17, 31) ~ 'Female',
-    TRUE ~ 'Total'  
-  )
-}
-
-
-ethnicity_of_p <- function(x) {
-  pl <- letter_of_p(x)
-
+recode_ethnicity_p <- function(x) {
+  pl <- extract_letter_p(x)
+  
   case_when(
     pl == '' ~ 'Total', # rapidly map the P12 total table
     pl == 'I' ~ 'White (not-H)',
@@ -252,54 +225,45 @@ ethnicity_of_p <- function(x) {
   )
 }
 
-
-letter_of_b <- function(x) {
-  if_else(nchar(x) == 11, substr(x, 7, 7), '')
-}
-
-ethnicity_of_b <- function(x) {
-  pl <- letter_of_b(x)
+recode_gender_p <- function(x) {
+  pn <- as.numeric(extract_number_p(x))
 
   case_when(
-    pl == '' ~ 'Total', # rapidly map the P12 total table
-    pl == 'H' ~ 'White (not-H)',
-    pl == 'B' ~ 'Black',
-    pl == 'I' ~ 'Latinx',
-    pl == 'D' ~ 'Asian',
-    pl == 'G' ~ 'Multiracial',
-    pl == 'E' ~ 'Hawaiian-PI',
-    pl == 'C' ~ 'Native Ame.',
-    pl == 'F' ~ 'Other Race',
-    pl == 'A' ~ 'White (both Hispanic and Not)'
-    # note that it simply ignores A (White including Hispanic)
-    # and F (Other Race) because those are not mappable to InfoNet
+    between(pn, 2, 25) ~ 'Male',
+    between(pn, 26, 49) ~ 'Female',
+    TRUE ~ 'Total'
   )
 }
 
-number_of_b <- function(x){
+extract_letter_b <- function(x) {
+  if_else(nchar(x) == 11, substr(x, 7, 7), '')
+}
+
+extract_number_b <- function(x){
   if_else(nchar(x) == 11, substr(x, 10, 11), substr(x, 9, 10))
 }
 
-age_of_b <- function(x) {
-  bn <- as.numeric(number_of_b(x))
-  bl <- letter_of_b(x)
+recode_age_b <- function(x) {
+  bn <- as.numeric(extract_number_b(x))
+  bl <- extract_letter_b(x)
+
   output <- case_when(
     bl == '' & between(bn, 27, 49) ~ bn - 24,
     bl == '' ~ bn,
     bl != '' & between(bn, 17, 31) ~ bn - 15,
     TRUE ~ bn
   )
-
+  
   case_when(
     output == 1 ~ 'Total',
     output == 2 ~ 'Total',
-
+    
     # these are in rough probabilistic order
     # because we expect most folks to be
     # in 20s or 30s, then 40s, then 50s
     # should process faster on average
     # because case operates in order
-
+    
     bl == '' & output == 12 ~ '30-34',
     bl == '' & output == 13 ~ '35-39',
     bl == '' & output == 11 ~ '25-29',
@@ -311,14 +275,14 @@ age_of_b <- function(x) {
     bl == '' & output == 15 ~ '45-49',
     bl == '' & output == 16 ~ '50-54',
     bl == '' & output == 17 ~ '55-59',
-
+    
     # now ordered
     bl == '' & output == 3 ~ '<5',
     bl == '' & output == 4 ~ '5-9',
     bl == '' & output == 5 ~ '10-14',
     bl == '' & output == 6 ~ '15-17',
     # break and resume ordered
-
+    
     bl == '' & output == 18 ~ '60-61',
     bl == '' & output == 19 ~ '62-64',
     bl == '' & output == 20 ~ '65-66',
@@ -327,9 +291,9 @@ age_of_b <- function(x) {
     bl == '' & output == 23 ~ '75-79',
     bl == '' & output == 24 ~ '80-84',
     bl == '' & output == 25 ~ '85&older',
-
+    
     # bl is not ''
-
+    
     # now ordered
     bl != '' & output == 3 ~ '<5',
     bl != '' & output == 4 ~ '5-9',
@@ -348,20 +312,52 @@ age_of_b <- function(x) {
   )
 }
 
+recode_ethnicity_b <- function(x) {
+  bl <- extract_letter_b(x)
+  
+  case_when(
+    bl == '' ~ 'Total', # rapidly map the P12 total table
+    bl == 'H' ~ 'White (not-H)',
+    bl == 'B' ~ 'Black',
+    bl == 'I' ~ 'Latinx',
+    bl == 'D' ~ 'Asian',
+    bl == 'G' ~ 'Multiracial',
+    bl == 'E' ~ 'Hawaiian-PI',
+    bl == 'C' ~ 'Native Ame.',
+    bl == 'F' ~ 'Other Race',
+    bl == 'A' ~ 'White (both Hispanic and Not)'
+    # note that it simply ignores A (White including Hispanic)
+    # and F (Other Race) because those are not mappable to InfoNet
+  )
+}
+
+recode_gender_b <- function(x) {
+  bn <- as.numeric(extract_number_b(x))
+  bl <- extract_letter_b(x)
+  
+  case_when(
+    bl == '' & between(bn, 2, 25) ~ 'Male',
+    bl == '' & between(bn, 26, 49) ~ 'Female',
+    bl != '' & between(bn, 2, 16) ~ 'Male',
+    bl != '' & between(bn, 17, 31) ~ 'Female',
+    TRUE ~ 'Total'  
+  )
+}
+
 # Module export list ----
 list(
   acs_tracts_by_county = load_illinois_acs_by_county,
   census_blocks_by_county = load_illinois_blocks_by_county,
   B = list(
-    age = age_of_b,
-    ethnicity = ethnicity_of_b,
-    gender = gender_of_b,
-    vars = varsB1001
+    age = recode_age_b,
+    ethnicity = recode_ethnicity_b,
+    gender = recode_gender_b,
+    vars = vars_b1001
   ),
   P = list (
-    age = age_of_p,
-    ethnicity = ethnicity_of_p,
-    gender = gender_of_p,
-    vars = varsP12
+    age = recode_age_p,
+    ethnicity = recode_ethnicity_p,
+    gender = recode_gender_p,
+    vars = vars_p12
   )
 )
