@@ -23,14 +23,12 @@
 
 ### Setup -------
 library(tidycensus)
-library(tidyverse)
-library(doParallel)
+library(dplyr)
 library(data.table)
 library(foreach)
 
 api_key <- "616907b994896c1dde3f6ba7e408703e51e9fd26" # Karl Gruschow's key
 census_api_key(key = api_key, install = TRUE, overwrite = TRUE)
-registerDoParallel()
 
 ### load the variables from the census API for the latest Census and ACS ----
 # historically these have been constant
