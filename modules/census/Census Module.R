@@ -89,17 +89,15 @@ load_illinois_blocks_by_county <- function (
   print("Failed counties, in FIPS code:")
   print(counties[!(counties %in% counties_success)])
 
-  if (postprocess) {
-    output[, .(
-      GEOID,
-      value,
-      gender = recode_gender_p(variable),
-      race = recode_ethnicity_p(variable),
-      age = recode_age_p(variable)
-    )]
-  } else {
-    output
-  }
+  if (!postprocess) return(output)
+
+  output[, .(
+    GEOID,
+    value,
+    gender = recode_gender_p(variable),
+    race = recode_ethnicity_p(variable),
+    age = recode_age_p(variable)
+  )]
 }
 
 load_illinois_acs_by_county <- function(
@@ -123,18 +121,16 @@ load_illinois_acs_by_county <- function(
   counties_success <- as.numeric(unique(output[, substr(GEOID, 3, 5)]))
   print("Failed counties, in FIPS code:")
   print(counties[!(counties %in% counties_success)])
-  
-  if (postprocess) {
-    output[, .(
-      GEOID,
-      estimate,
-      gender = recode_gender_b(variable),
-      race = recode_ethnicity_b(variable),
-      age = recode_age_b(variable)
-    )]
-  } else {
-    output
-  }
+
+  if (!postprocess) return(output)
+
+  output[, .(
+    GEOID,
+    estimate,
+    gender = recode_gender_b(variable),
+    race = recode_ethnicity_b(variable),
+    age = recode_age_b(variable)
+  )]
 }
 
 
