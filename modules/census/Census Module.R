@@ -1,4 +1,4 @@
-#### Module Description -----
+### Module Description ----
 
 #### ICJIA Census and ACS Age x Gender x Ethnicity Module v.9
 
@@ -21,7 +21,7 @@
 
 # 4. Provide convenience functions for random sampling
 
-### Setup -------
+### Setup ----
 library(tidycensus)
 library(dplyr)
 library(data.table)
@@ -30,13 +30,15 @@ library(foreach)
 api_key <- "616907b994896c1dde3f6ba7e408703e51e9fd26" # Karl Gruschow's key
 census_api_key(key = api_key, install = TRUE, overwrite = TRUE)
 
-### load the variables from the census API for the latest Census and ACS ----
+
+### Load the variables from the census API for the latest Census and ACS ----
 # historically these have been constant
 vars_census <- load_variables(2010, "sf1", cache = TRUE)
 vars_acs <- load_variables(2018, "acs5", cache = TRUE)
 
 vars_p12 <- subset(vars_census, grepl("^P012", census_vars$name))
 vars_b1001 <- subset(vars_acs, grepl("^B01001", acs_vars$name))
+
 
 ### Functions for loading census and ACS block and block group level data for Illinois ----
 get_p12_blocks_by_county <- function (county, year = 2010) {
@@ -133,8 +135,7 @@ load_illinois_acs_by_county <- function(
 }
 
 
-### optional debug of census API calls -----
-
+### optional debug of census API calls ----
 # these test the basic loading functions, inclusive error handling, because illinois FIPS are only odd,
 # so a full half the counties are invalid, works well as of 12/23/19
 
@@ -143,9 +144,7 @@ load_illinois_acs_by_county <- function(
 # test_acs <- load_illinois_acs_by_year_X_county(2018,(1:4))
 
 
-###
-
-##### Census Demographic Variable processing ----
+### Census Demographic Variable processing ----
 extract_letter_p <- function(x) {
   if_else(nchar(x) == 8, substr(x, 5, 5), "")
 }
@@ -337,7 +336,7 @@ recode_gender_b <- function(x) {
   )
 }
 
-# Module export list ----
+### Module export list ----
 list(
   acs_tracts_by_county = load_illinois_acs_by_county,
   census_blocks_by_county = load_illinois_blocks_by_county,
