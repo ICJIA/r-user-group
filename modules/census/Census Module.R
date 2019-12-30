@@ -1,6 +1,6 @@
 #### Module Description -----
 
-#### ICJIA Census and ACS Age x Gender x Ethnicity Module v.9 
+#### ICJIA Census and ACS Age x Gender x Ethnicity Module v.9
 
 # What does this module do:
 
@@ -39,7 +39,6 @@ vars_p12 <- subset(vars_census, grepl("^P012", census_vars$name))
 vars_b1001 <- subset(vars_acs, grepl("^B01001", acs_vars$name))
 
 ### Functions for loading census and ACS block and block group level data for Illinois ----
-
 get_p12_blocks_by_county <- function (county, year = 2010) {
   get_decennial(
     geography = "block",
@@ -107,7 +106,7 @@ load_illinois_acs_by_county <- function(
   postprocess = TRUE
 ) {
 
-  # this is essentially the same as blocks, except also year 
+  # this is essentially the same as blocks, except also year
 
   output <- foreach(
     county = counties,
@@ -144,7 +143,7 @@ load_illinois_acs_by_county <- function(
 # test_acs <- load_illinois_acs_by_year_X_county(2018,(1:4))
 
 
-### 
+###
 
 ##### Census Demographic Variable processing ----
 extract_letter_p <- function(x) {
@@ -201,7 +200,7 @@ recode_age_p <- function(x) {
 
 recode_ethnicity_p <- function(x) {
   pl <- extract_letter_p(x)
-  
+
   case_when(
     pl == "" ~ "Total", # rapidly map the P12 total table
     pl == "I" ~ "White (not-H)",
@@ -247,17 +246,17 @@ recode_age_b <- function(x) {
     bl != "" & between(bn, 17, 31) ~ bn - 15,
     TRUE ~ bn
   )
-  
+
   case_when(
     output == 1 ~ "Total",
     output == 2 ~ "Total",
-    
+
     # these are in rough probabilistic order
     # because we expect most folks to be
     # in 20s or 30s, then 40s, then 50s
     # should process faster on average
     # because case operates in order
-    
+
     bl == "" & output == 12 ~ "30-34",
     bl == "" & output == 13 ~ "35-39",
     bl == "" & output == 11 ~ "25-29",
@@ -269,14 +268,14 @@ recode_age_b <- function(x) {
     bl == "" & output == 15 ~ "45-49",
     bl == "" & output == 16 ~ "50-54",
     bl == "" & output == 17 ~ "55-59",
-    
+
     # now ordered
     bl == "" & output == 3 ~ "<5",
     bl == "" & output == 4 ~ "5-9",
     bl == "" & output == 5 ~ "10-14",
     bl == "" & output == 6 ~ "15-17",
     # break and resume ordered
-    
+
     bl == "" & output == 18 ~ "60-61",
     bl == "" & output == 19 ~ "62-64",
     bl == "" & output == 20 ~ "65-66",
@@ -285,9 +284,9 @@ recode_age_b <- function(x) {
     bl == "" & output == 23 ~ "75-79",
     bl == "" & output == 24 ~ "80-84",
     bl == "" & output == 25 ~ "85&older",
-    
+
     # bl is not ""
-    
+
     # now ordered
     bl != "" & output == 3 ~ "<5",
     bl != "" & output == 4 ~ "5-9",
@@ -308,7 +307,7 @@ recode_age_b <- function(x) {
 
 recode_ethnicity_b <- function(x) {
   bl <- extract_letter_b(x)
-  
+
   case_when(
     bl == "" ~ "Total", # rapidly map the P12 total table
     bl == "H" ~ "White (not-H)",
@@ -328,13 +327,13 @@ recode_ethnicity_b <- function(x) {
 recode_gender_b <- function(x) {
   bn <- extract_number_b(x)
   bl <- extract_letter_b(x)
-  
+
   case_when(
     bl == "" & between(bn, 2, 25) ~ "Male",
     bl == "" & between(bn, 26, 49) ~ "Female",
     bl != "" & between(bn, 2, 16) ~ "Male",
     bl != "" & between(bn, 17, 31) ~ "Female",
-    TRUE ~ "Total"  
+    TRUE ~ "Total"
   )
 }
 
