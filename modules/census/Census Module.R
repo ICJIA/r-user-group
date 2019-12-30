@@ -338,18 +338,18 @@ recode_gender_b <- function(x) {
 
 ### Module export list ----
 list(
-  acs_tracts_by_county = load_illinois_acs_by_county,
-  census_blocks_by_county = load_illinois_blocks_by_county,
-  B = list(
-    age = recode_age_b,
-    ethnicity = recode_ethnicity_b,
-    gender = recode_gender_b,
+  load_illinois_acs_by_county = load_illinois_acs_by_county,
+  load_illinois_blocks_by_county = load_illinois_blocks_by_county,
+  b1001 = list(
+    recode_age = recode_age_b,
+    recode_ethnicity = recode_ethnicity_b,
+    recode_gender = recode_gender_b,
     vars = vars_b1001
   ),
-  P = list (
-    age = recode_age_p,
-    ethnicity = recode_ethnicity_p,
-    gender = recode_gender_p,
+  p12 = list (
+    recode_age = recode_age_p,
+    recode_ethnicity = recode_ethnicity_p,
+    recode_gender = recode_gender_p,
     vars = vars_p12
   )
 )
