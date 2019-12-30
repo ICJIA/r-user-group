@@ -148,7 +148,7 @@ load_illinois_acs_by_county <- function(
 
 ##### Census Demographic Variable processing ----
 extract_letter_p <- function(x) {
-  if_else(nchar(x) == 8, substr(x, 5, 5), '')
+  if_else(nchar(x) == 8, substr(x, 5, 5), "")
 }
 
 extract_number_p <- function(x){
@@ -160,8 +160,8 @@ recode_age_p <- function(x) {
   pn <- if_else(between(pn, 27, 49), pn - 24, pn)
 
   case_when(
-    pn == 1 ~ 'Total',
-    pn == 2 ~ 'Total',
+    pn == 1 ~ "Total",
+    pn == 2 ~ "Total",
 
     # these are in rough probabilistic order
     # because we expect most folks to be
@@ -169,33 +169,33 @@ recode_age_p <- function(x) {
     # should process faster on average
     # because case operates in order
 
-    pn == 12 ~ '30-34',
-    pn == 13 ~ '35-39',
-    pn == 11 ~ '25-29',
-    pn == 10 ~ '22-24',
-    pn == 14 ~ '40-44',
-    pn == 9 ~ '21',
-    pn == 8 ~ '20',
-    pn == 7 ~ '18-19',
-    pn == 15 ~ '45-49',
-    pn == 16 ~ '50-54',
-    pn == 17 ~ '55-59',
+    pn == 12 ~ "30-34",
+    pn == 13 ~ "35-39",
+    pn == 11 ~ "25-29",
+    pn == 10 ~ "22-24",
+    pn == 14 ~ "40-44",
+    pn == 9 ~ "21",
+    pn == 8 ~ "20",
+    pn == 7 ~ "18-19",
+    pn == 15 ~ "45-49",
+    pn == 16 ~ "50-54",
+    pn == 17 ~ "55-59",
 
     # now ordered
-    pn == 3 ~ '<5',
-    pn == 4 ~ '5-9',
-    pn == 5 ~ '10-14',
-    pn == 6 ~ '15-17',
+    pn == 3 ~ "<5",
+    pn == 4 ~ "5-9",
+    pn == 5 ~ "10-14",
+    pn == 6 ~ "15-17",
     # break and resume ordered
 
-    pn == 18 ~ '60-61',
-    pn == 19 ~ '62-64',
-    pn == 20 ~ '65-66',
-    pn == 21 ~ '67-69',
-    pn == 22 ~ '70-74',
-    pn == 23 ~ '75-79',
-    pn == 24 ~ '80-84',
-    pn == 25 ~ '85&older'
+    pn == 18 ~ "60-61",
+    pn == 19 ~ "62-64",
+    pn == 20 ~ "65-66",
+    pn == 21 ~ "67-69",
+    pn == 22 ~ "70-74",
+    pn == 23 ~ "75-79",
+    pn == 24 ~ "80-84",
+    pn == 25 ~ "85&older"
   )
 }
 
@@ -203,16 +203,16 @@ recode_ethnicity_p <- function(x) {
   pl <- extract_letter_p(x)
   
   case_when(
-    pl == '' ~ 'Total', # rapidly map the P12 total table
-    pl == 'I' ~ 'White (not-H)',
-    pl == 'B' ~ 'Black',
-    pl == 'H' ~ 'Latinx',
-    pl == 'D' ~ 'Asian',
-    pl == 'G' ~ 'Multiracial',
-    pl == 'E' ~ 'Hawaiian-PI',
-    pl == 'C' ~ 'Native Ame.',
-    pl == 'F' ~ 'Other Race',
-    pl == 'A' ~ 'White (both Hispanic and Not)'
+    pl == "" ~ "Total", # rapidly map the P12 total table
+    pl == "I" ~ "White (not-H)",
+    pl == "B" ~ "Black",
+    pl == "H" ~ "Latinx",
+    pl == "D" ~ "Asian",
+    pl == "G" ~ "Multiracial",
+    pl == "E" ~ "Hawaiian-PI",
+    pl == "C" ~ "Native Ame.",
+    pl == "F" ~ "Other Race",
+    pl == "A" ~ "White (both Hispanic and Not)"
     # for infoNet, ideally we ignore
     # ote that it simply ignores A (White including Hispanic)
     # and F (Other Race) because those are not mappable to InfoNet
@@ -223,14 +223,14 @@ recode_gender_p <- function(x) {
   pn <- extract_number_p(x)
 
   case_when(
-    between(pn, 2, 25) ~ 'Male',
-    between(pn, 26, 49) ~ 'Female',
-    TRUE ~ 'Total'
+    between(pn, 2, 25) ~ "Male",
+    between(pn, 26, 49) ~ "Female",
+    TRUE ~ "Total"
   )
 }
 
 extract_letter_b <- function(x) {
-  if_else(nchar(x) == 11, substr(x, 7, 7), '')
+  if_else(nchar(x) == 11, substr(x, 7, 7), "")
 }
 
 extract_number_b <- function(x){
@@ -242,15 +242,15 @@ recode_age_b <- function(x) {
   bl <- extract_letter_b(x)
 
   output <- case_when(
-    bl == '' & between(bn, 27, 49) ~ bn - 24,
-    bl == '' ~ bn,
-    bl != '' & between(bn, 17, 31) ~ bn - 15,
+    bl == "" & between(bn, 27, 49) ~ bn - 24,
+    bl == "" ~ bn,
+    bl != "" & between(bn, 17, 31) ~ bn - 15,
     TRUE ~ bn
   )
   
   case_when(
-    output == 1 ~ 'Total',
-    output == 2 ~ 'Total',
+    output == 1 ~ "Total",
+    output == 2 ~ "Total",
     
     # these are in rough probabilistic order
     # because we expect most folks to be
@@ -258,51 +258,51 @@ recode_age_b <- function(x) {
     # should process faster on average
     # because case operates in order
     
-    bl == '' & output == 12 ~ '30-34',
-    bl == '' & output == 13 ~ '35-39',
-    bl == '' & output == 11 ~ '25-29',
-    bl == '' & output == 10 ~ '22-24',
-    bl == '' & output == 14 ~ '40-44',
-    bl == '' & output == 9 ~ '21',
-    bl == '' & output == 8 ~ '20',
-    bl == '' & output == 7 ~ '18-19',
-    bl == '' & output == 15 ~ '45-49',
-    bl == '' & output == 16 ~ '50-54',
-    bl == '' & output == 17 ~ '55-59',
+    bl == "" & output == 12 ~ "30-34",
+    bl == "" & output == 13 ~ "35-39",
+    bl == "" & output == 11 ~ "25-29",
+    bl == "" & output == 10 ~ "22-24",
+    bl == "" & output == 14 ~ "40-44",
+    bl == "" & output == 9 ~ "21",
+    bl == "" & output == 8 ~ "20",
+    bl == "" & output == 7 ~ "18-19",
+    bl == "" & output == 15 ~ "45-49",
+    bl == "" & output == 16 ~ "50-54",
+    bl == "" & output == 17 ~ "55-59",
     
     # now ordered
-    bl == '' & output == 3 ~ '<5',
-    bl == '' & output == 4 ~ '5-9',
-    bl == '' & output == 5 ~ '10-14',
-    bl == '' & output == 6 ~ '15-17',
+    bl == "" & output == 3 ~ "<5",
+    bl == "" & output == 4 ~ "5-9",
+    bl == "" & output == 5 ~ "10-14",
+    bl == "" & output == 6 ~ "15-17",
     # break and resume ordered
     
-    bl == '' & output == 18 ~ '60-61',
-    bl == '' & output == 19 ~ '62-64',
-    bl == '' & output == 20 ~ '65-66',
-    bl == '' & output == 21 ~ '67-69',
-    bl == '' & output == 22 ~ '70-74',
-    bl == '' & output == 23 ~ '75-79',
-    bl == '' & output == 24 ~ '80-84',
-    bl == '' & output == 25 ~ '85&older',
+    bl == "" & output == 18 ~ "60-61",
+    bl == "" & output == 19 ~ "62-64",
+    bl == "" & output == 20 ~ "65-66",
+    bl == "" & output == 21 ~ "67-69",
+    bl == "" & output == 22 ~ "70-74",
+    bl == "" & output == 23 ~ "75-79",
+    bl == "" & output == 24 ~ "80-84",
+    bl == "" & output == 25 ~ "85&older",
     
-    # bl is not ''
+    # bl is not ""
     
     # now ordered
-    bl != '' & output == 3 ~ '<5',
-    bl != '' & output == 4 ~ '5-9',
-    bl != '' & output == 5 ~ '10-14',
-    bl != '' & output == 6 ~ '15-17',
-    bl != '' & output == 7 ~ '18-19',
-    bl != '' & output == 8 ~ '20-24',
-    bl != '' & output == 9 ~ '25-29',
-    bl != '' & output == 10 ~ '30-34',
-    bl != '' & output == 11 ~ '35-45',
-    bl != '' & output == 12 ~ '45-54',
-    bl != '' & output == 13 ~ '55-64',
-    bl != '' & output == 14 ~ '65-74',
-    bl != '' & output == 15 ~ '75-84',
-    bl != '' & output == 16 ~ '85 and older'
+    bl != "" & output == 3 ~ "<5",
+    bl != "" & output == 4 ~ "5-9",
+    bl != "" & output == 5 ~ "10-14",
+    bl != "" & output == 6 ~ "15-17",
+    bl != "" & output == 7 ~ "18-19",
+    bl != "" & output == 8 ~ "20-24",
+    bl != "" & output == 9 ~ "25-29",
+    bl != "" & output == 10 ~ "30-34",
+    bl != "" & output == 11 ~ "35-45",
+    bl != "" & output == 12 ~ "45-54",
+    bl != "" & output == 13 ~ "55-64",
+    bl != "" & output == 14 ~ "65-74",
+    bl != "" & output == 15 ~ "75-84",
+    bl != "" & output == 16 ~ "85 and older"
   )
 }
 
@@ -310,16 +310,16 @@ recode_ethnicity_b <- function(x) {
   bl <- extract_letter_b(x)
   
   case_when(
-    bl == '' ~ 'Total', # rapidly map the P12 total table
-    bl == 'H' ~ 'White (not-H)',
-    bl == 'B' ~ 'Black',
-    bl == 'I' ~ 'Latinx',
-    bl == 'D' ~ 'Asian',
-    bl == 'G' ~ 'Multiracial',
-    bl == 'E' ~ 'Hawaiian-PI',
-    bl == 'C' ~ 'Native Ame.',
-    bl == 'F' ~ 'Other Race',
-    bl == 'A' ~ 'White (both Hispanic and Not)'
+    bl == "" ~ "Total", # rapidly map the P12 total table
+    bl == "H" ~ "White (not-H)",
+    bl == "B" ~ "Black",
+    bl == "I" ~ "Latinx",
+    bl == "D" ~ "Asian",
+    bl == "G" ~ "Multiracial",
+    bl == "E" ~ "Hawaiian-PI",
+    bl == "C" ~ "Native Ame.",
+    bl == "F" ~ "Other Race",
+    bl == "A" ~ "White (both Hispanic and Not)"
     # note that it simply ignores A (White including Hispanic)
     # and F (Other Race) because those are not mappable to InfoNet
   )
@@ -330,11 +330,11 @@ recode_gender_b <- function(x) {
   bl <- extract_letter_b(x)
   
   case_when(
-    bl == '' & between(bn, 2, 25) ~ 'Male',
-    bl == '' & between(bn, 26, 49) ~ 'Female',
-    bl != '' & between(bn, 2, 16) ~ 'Male',
-    bl != '' & between(bn, 17, 31) ~ 'Female',
-    TRUE ~ 'Total'  
+    bl == "" & between(bn, 2, 25) ~ "Male",
+    bl == "" & between(bn, 26, 49) ~ "Female",
+    bl != "" & between(bn, 2, 16) ~ "Male",
+    bl != "" & between(bn, 17, 31) ~ "Female",
+    TRUE ~ "Total"  
   )
 }
 
