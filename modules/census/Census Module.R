@@ -36,8 +36,8 @@ census_api_key(key = api_key, install = TRUE, overwrite = TRUE)
 vars_census <- load_variables(2010, "sf1", cache = TRUE)
 vars_acs <- load_variables(2018, "acs5", cache = TRUE)
 
-vars_p12 <- subset(vars_census, grepl("^P012", census_vars$name))
-vars_b1001 <- subset(vars_acs, grepl("^B01001", acs_vars$name))
+vars_p12 <- subset(vars_census, grepl("^P012", vars_census$name))
+vars_b1001 <- subset(vars_acs, grepl("^B01001", vars_acs$name))
 
 
 ### Functions for loading census and ACS block and block group level data for Illinois ----
